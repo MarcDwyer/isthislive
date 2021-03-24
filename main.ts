@@ -1,9 +1,5 @@
-import {
-  TwitchChat,
-  TwitchAPI,
-  IrcMessage,
-} from "https://deno.land/x/tmi/mod.ts";
-import { blue, red, green } from "https://deno.land/std@0.88.0/fmt/colors.ts";
+import { TwitchChat, TwitchAPI } from "https://deno.land/x/tmi/mod.ts";
+import { blue, green } from "https://deno.land/std@0.88.0/fmt/colors.ts";
 import { delay } from "https://deno.land/std@0.88.0/async/delay.ts";
 
 const cid = Deno.env.get("CID"),
@@ -50,6 +46,10 @@ async function saySomething(channel: string, msg: string) {
 
 try {
   await tc.connect();
+  await getStreams();
+  setInterval(() => {
+    getStreams();
+  }, 60000 * 10);
 } catch (err) {
   console.error(err);
 }
