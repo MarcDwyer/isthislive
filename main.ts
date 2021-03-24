@@ -15,14 +15,14 @@ const fmap = new Map<number, number>();
 async function getStreams() {
   const { streams } = await api.getFollowers();
   if (!streams || !streams.length) throw "No streams provided";
-  for (const stream of streams) {
-    const check = fmap.get(stream._id);
+  for (const { channel } of streams) {
+    const check = fmap.get(channel._id);
     const currDate = new Date();
 
     if (!check || (check && check < currDate.getTime())) {
-      saySomething(stream.channel.name, "is this live");
+      saySomething(channel.name, "is this live");
       currDate.setHours(currDate.getHours() + 12);
-      fmap.set(stream._id, currDate.getTime());
+      fmap.set(channel._id, currDate.getTime());
     }
   }
 }
