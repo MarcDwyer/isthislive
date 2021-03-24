@@ -21,7 +21,7 @@ async function getStreams() {
 
     if (!check || (check && check < currDate.getTime())) {
       saySomething(stream.channel.name, "is this live");
-      currDate.setHours(currDate.getHours() + 24);
+      currDate.setHours(currDate.getHours() + 12);
       fmap.set(stream._id, currDate.getTime());
     }
   }
