@@ -2,8 +2,8 @@ import { TwitchChat, TwitchAPI } from "https://deno.land/x/tmi/mod.ts";
 import { blue, green } from "https://deno.land/std@0.88.0/fmt/colors.ts";
 import { delay } from "https://deno.land/std@0.88.0/async/delay.ts";
 
-const cid = Deno.env.get("CID"),
-  oauth = Deno.env.get("OAUTH");
+const cid = Deno.env.get("roycid"),
+  oauth = Deno.env.get("royoauth");
 
 if (!cid || !oauth) throw new Error("err getting creds");
 
