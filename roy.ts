@@ -1,6 +1,7 @@
 import { TwitchChat, TwitchAPI } from "https://deno.land/x/tmi/mod.ts";
 import { blue, green } from "https://deno.land/std@0.88.0/fmt/colors.ts";
 import { delay } from "https://deno.land/std@0.88.0/async/delay.ts";
+import { DataJSON } from "./type_defs.ts";
 
 export class Roy {
   private api: TwitchAPI;
@@ -8,10 +9,7 @@ export class Roy {
 
   private past: Map<number, number> = new Map();
 
-  constructor(public msg: string, private username: string) {
-    const cid = Deno.env.get("roycid"),
-      oauth = Deno.env.get("royoauth");
-    if (!cid || !oauth) throw new Error("err getting creds");
+  constructor(public msg: string, { username, cid, oauth }: DataJSON) {
     this.api = new TwitchAPI(cid, oauth);
     this.tc = new TwitchChat(cid, username);
   }
