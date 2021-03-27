@@ -18,9 +18,10 @@ router.post("/msg", async (ctx) => {
   const reader = ctx.request.body({ type: "reader" });
   const b = await Deno.readAll(reader.value);
   const body = JSON.parse(decoder.decode(b));
-  if (body.msg) {
+  if (body.msg && body.key === data.key) {
     roy.msg = body.msg;
   }
+  ctx.response.body = roy.msg;
 });
 const app = new Application();
 app.use(router.routes());
