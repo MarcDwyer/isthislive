@@ -1,55 +1,20 @@
-import { TwitchChat, TwitchAPI } from "https://deno.land/x/tmi/mod.ts";
-import { blue, green } from "https://deno.land/std@0.88.0/fmt/colors.ts";
-import { delay } from "https://deno.land/std@0.88.0/async/delay.ts";
+import { Roy } from "./roy.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
-const cid = Deno.env.get("roycid"),
-  oauth = Deno.env.get("royoauth");
+const bytes = await Deno.readFile("./data.json");
+const decoder = new TextDecoder();
 
-if (!cid || !oauth) throw new Error("err getting creds");
+const data = JSON.parse(decoder.decode(bytes));
+if (!data || !data.username) throw new Error("No username provided");
 
-const tc = new TwitchChat(oauth, "cummunism_");
-const api = new TwitchAPI(cid, oauth);
+const roy = new Roy("is this live", data.username);
 
-const fmap = new Map<number, number>();
+await roy.initRoy();
 
-async function getStreams() {
-  const { streams } = await api.getFollowers();
-  if (!streams || !streams.length) throw "No streams provided";
-  for (const { channel } of streams) {
-    const check = fmap.get(channel._id);
-    const currDate = new Date();
+const router = new Router();
 
-    if (!check || (check && check < currDate.getTime())) {
-      saySomething(channel.name, "is this live");
-      currDate.setHours(currDate.getHours() + 12);
-      fmap.set(channel._id, currDate.getTime());
-    }
-  }
-}
+const app = new Application();
+app.use(router.routes());
+app.use(router.allowedMethods());
 
-async function saySomething(channel: string, msg: string) {
-  const chan = tc.joinChannel(channel);
-  console.log(blue(`Joined ${channel}`));
-  chan.send(msg);
-  chan.addEventListener("privmsg", (msg) => {
-    if (msg.directMsg) {
-      console.log(
-        green(
-          `Channel: ${msg.channel}. User: ${msg.username}. Said: ${msg.message}`
-        )
-      );
-    }
-  });
-  await delay(60000 * 3);
-  chan.part();
-}
-
-try {
-  await tc.connect();
-  await getStreams();
-  setInterval(() => {
-    getStreams();
-  }, 60000 * 10);
-} catch (err) {
-  console.error(err);
-}
+await app.listen({ port: 8000 });
